@@ -1,0 +1,1454 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Motorama API",
+    "version": "0.1.0",
+    "description": "Motorama V1/V2/V3 API: projects, compendium seed import, engineering snapshots, validation, patents, counsel portal.",
+    "x-generated-at": "2026-12-25T00:00:00Z"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "error",
+          "message"
+        ]
+      },
+      "Brand": {
+        "type": "object",
+        "properties": {
+          "brand_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "country_origin": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "founded_year": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "defunct_year": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "defunct"
+            ]
+          },
+          "design_philosophy": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "official_site": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "created_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "brand_id",
+          "name",
+          "status"
+        ]
+      },
+      "TerminologyTerm": {
+        "type": "object",
+        "properties": {
+          "term_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "term": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "definition": {
+            "type": "string"
+          },
+          "synonyms": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "term_id",
+          "term",
+          "category",
+          "definition"
+        ]
+      },
+      "Vehicle": {
+        "type": "object",
+        "properties": {
+          "vehicle_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "brand_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "model_name": {
+            "type": "string"
+          },
+          "generation_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "generation_code": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "year_start": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "year_end": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "segment_class_term_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "body_style_term_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "production_status": {
+            "type": "string",
+            "enum": [
+              "production",
+              "concept",
+              "race",
+              "oneoff",
+              "prototype"
+            ]
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "seed_rank": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "vehicle_id",
+          "brand_id",
+          "model_name",
+          "production_status"
+        ]
+      },
+      "Variant": {
+        "type": "object",
+        "properties": {
+          "variant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "vehicle_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "variant_name": {
+            "type": "string"
+          },
+          "market_region": {
+            "type": "string",
+            "enum": [
+              "global",
+              "na",
+              "eu",
+              "asia",
+              "me",
+              "other"
+            ]
+          },
+          "production_volume": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "homologation_class": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "variant_id",
+          "vehicle_id",
+          "variant_name",
+          "market_region"
+        ]
+      },
+      "ValidationRule": {
+        "type": "object",
+        "properties": {
+          "rule_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "NOTE",
+              "WARN",
+              "FAIL"
+            ]
+          },
+          "category": {
+            "type": "string"
+          },
+          "screen": {
+            "type": "string"
+          },
+          "field_paths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "when": {
+            "type": "object"
+          },
+          "logic": {
+            "type": "object"
+          },
+          "message": {
+            "type": "string"
+          },
+          "fix_actions": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "rule_id",
+          "title",
+          "severity",
+          "category",
+          "screen",
+          "field_paths",
+          "message",
+          "fix_actions"
+        ]
+      },
+      "ValidationFinding": {
+        "type": "object",
+        "properties": {
+          "finding_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rule_id": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "NOTE",
+              "WARN",
+              "FAIL"
+            ]
+          },
+          "screen": {
+            "type": "string"
+          },
+          "field_path": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "suggested_fix_action_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "finding_id",
+          "rule_id",
+          "severity",
+          "screen",
+          "field_path",
+          "code",
+          "message",
+          "suggested_fix_action_ids",
+          "created_at"
+        ]
+      },
+      "EngineeringSnapshot": {
+        "type": "object",
+        "properties": {
+          "snapshot_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "variant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "created_by": {
+            "type": "object"
+          },
+          "lock_state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "frozen",
+              "locked"
+            ]
+          },
+          "inputs": {
+            "type": "object"
+          },
+          "computed": {
+            "type": "object"
+          },
+          "validation": {
+            "type": "object",
+            "properties": {
+              "errors": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ValidationFinding"
+                }
+              },
+              "warnings": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ValidationFinding"
+                }
+              },
+              "notes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ValidationFinding"
+                }
+              },
+              "engineering_readiness_score": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "errors",
+              "warnings",
+              "notes",
+              "engineering_readiness_score"
+            ]
+          }
+        },
+        "required": [
+          "snapshot_id",
+          "project_id",
+          "variant_id",
+          "created_at",
+          "created_by",
+          "lock_state",
+          "inputs",
+          "computed",
+          "validation"
+        ]
+      },
+      "Project": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "brand": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "project_id",
+          "name",
+          "brand",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "PatentSection": {
+        "type": "object",
+        "properties": {
+          "anchor_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "locked_until_accept": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "anchor_id",
+          "title",
+          "content",
+          "locked_until_accept"
+        ]
+      },
+      "PatentDraft": {
+        "type": "object",
+        "properties": {
+          "patent_draft_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "variant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "design",
+              "utility"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "ready_for_review",
+              "counsel_review",
+              "approved_for_filing"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PatentSection"
+            }
+          },
+          "terminology_report": {
+            "type": "object"
+          },
+          "readiness": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "patent_draft_id",
+          "project_id",
+          "variant_id",
+          "snapshot_id",
+          "type",
+          "status",
+          "created_at",
+          "sections"
+        ]
+      },
+      "CounselComment": {
+        "type": "object",
+        "properties": {
+          "comment_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "patent_draft_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "anchor_id": {
+            "type": "string"
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "integer"
+              },
+              "end": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "info",
+              "warn",
+              "blocker"
+            ]
+          },
+          "comment_text": {
+            "type": "string"
+          },
+          "created_by": {
+            "type": "object"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "resolved",
+              "dismissed"
+            ]
+          },
+          "creates_task": {
+            "type": "boolean"
+          },
+          "task": {
+            "type": [
+              "object",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "comment_id",
+          "patent_draft_id",
+          "anchor_id",
+          "range",
+          "severity",
+          "comment_text",
+          "created_by",
+          "created_at",
+          "status",
+          "creates_task"
+        ]
+      },
+      "CounselTask": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "linked_screen": {
+            "type": "string"
+          },
+          "linked_field_paths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "acceptance_criteria": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "resolved"
+            ]
+          },
+          "resolution_note": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "task_id",
+          "title",
+          "linked_screen",
+          "linked_field_paths",
+          "acceptance_criteria",
+          "status"
+        ]
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/compendium/seed/import": {
+      "post": {
+        "summary": "Import compendium seed dataset",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "dataset_name": {
+                    "type": "string"
+                  },
+                  "dry_run": {
+                    "type": "boolean"
+                  },
+                  "payload": {
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "dataset_name",
+                  "dry_run",
+                  "payload"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Import result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "dataset_name": {
+                      "type": "string"
+                    },
+                    "dry_run": {
+                      "type": "boolean"
+                    },
+                    "inserted": {
+                      "type": "object"
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Error"
+                      }
+                    }
+                  },
+                  "required": [
+                    "dataset_name",
+                    "dry_run",
+                    "inserted",
+                    "errors"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/v1/compendium/vehicles": {
+      "get": {
+        "summary": "List vehicles",
+        "parameters": [
+          {
+            "name": "seed_rank_lte",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vehicles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Vehicle"
+                      }
+                    },
+                    "next_cursor": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "next_cursor"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects": {
+      "post": {
+        "summary": "Create project",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "brand": {
+                    "type": "string"
+                  },
+                  "variant_name": {
+                    "type": "string"
+                  },
+                  "classification": {
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "name",
+                  "brand",
+                  "variant_name",
+                  "classification"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/v1/projects/{project_id}": {
+      "get": {
+        "summary": "Get project",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Project",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/v1/snapshots/draft": {
+      "post": {
+        "summary": "Create engineering snapshot (draft)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "project_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "variant_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "inputs": {
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "project_id",
+                  "variant_id",
+                  "inputs"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Snapshot created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EngineeringSnapshot"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/validation/run": {
+      "post": {
+        "summary": "Run validation on snapshot",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "snapshot_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "ruleset": {
+                    "type": "string"
+                  },
+                  "rules_payload": {
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "snapshot_id",
+                  "ruleset"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Validation results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "snapshot_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ValidationFinding"
+                      }
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ValidationFinding"
+                      }
+                    },
+                    "notes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ValidationFinding"
+                      }
+                    },
+                    "engineering_readiness_score": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    }
+                  },
+                  "required": [
+                    "snapshot_id",
+                    "errors",
+                    "warnings",
+                    "notes",
+                    "engineering_readiness_score"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/snapshots/{snapshot_id}/freeze": {
+      "post": {
+        "summary": "Freeze a snapshot (immutable inputs)",
+        "parameters": [
+          {
+            "name": "snapshot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Frozen",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EngineeringSnapshot"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/patents/drafts": {
+      "post": {
+        "summary": "Create a patent draft",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "project_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "variant_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "snapshot_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "design",
+                      "utility"
+                    ]
+                  },
+                  "scope": {
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "project_id",
+                  "variant_id",
+                  "snapshot_id",
+                  "type",
+                  "scope"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Patent draft",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatentDraft"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/patents/drafts/{patent_draft_id}": {
+      "get": {
+        "summary": "Get patent draft",
+        "parameters": [
+          {
+            "name": "patent_draft_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Patent draft",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatentDraft"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/patents/drafts/{patent_draft_id}/comments": {
+      "post": {
+        "summary": "Add counsel comment to patent draft",
+        "parameters": [
+          {
+            "name": "patent_draft_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "anchor_id": {
+                    "type": "string"
+                  },
+                  "range": {
+                    "type": "object",
+                    "properties": {
+                      "start": {
+                        "type": "integer"
+                      },
+                      "end": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "start",
+                      "end"
+                    ]
+                  },
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "info",
+                      "warn",
+                      "blocker"
+                    ]
+                  },
+                  "comment_text": {
+                    "type": "string"
+                  },
+                  "creates_task": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "anchor_id",
+                  "range",
+                  "severity",
+                  "comment_text"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Comment created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CounselComment"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/patents/drafts/{patent_draft_id}/export": {
+      "post": {
+        "summary": "Export patent draft package",
+        "parameters": [
+          {
+            "name": "patent_draft_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "pdf"
+                    ]
+                  },
+                  "include": {
+                    "type": "string",
+                    "enum": [
+                      "all"
+                    ]
+                  }
+                },
+                "required": [
+                  "format",
+                  "include"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Export job result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "patent_draft_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "asset_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "ready"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "patent_draft_id",
+                    "asset_id",
+                    "status"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/counsel/tasks": {
+      "get": {
+        "summary": "List counsel tasks",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "open",
+                "resolved"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tasks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CounselTask"
+                      }
+                    }
+                  },
+                  "required": [
+                    "items"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/counsel/tasks/{task_id}/resolve": {
+      "post": {
+        "summary": "Resolve counsel task",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "resolution_note": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "resolution_note"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task resolved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CounselTask"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,666 @@
+{
+  "meta": {
+    "version": "v2",
+    "generated_at": "2026-12-25T00:00:00Z",
+    "count": 8
+  },
+  "rules": [
+    {
+      "rule_id": "EV-201",
+      "title": "Voltage/Power Current Risk",
+      "severity": "WARN",
+      "category": "EV",
+      "screen": "EngineeringBay.Powertrain",
+      "field_paths": [
+        "inputs.powertrain.battery.nominal_voltage_v",
+        "computed.total_power_kw"
+      ],
+      "when": {
+        "all": [
+          {
+            "path": "inputs.powertrain.type",
+            "op": "in",
+            "value": [
+              "EV",
+              "HEV",
+              "PHEV",
+              "quad_motor"
+            ]
+          }
+        ]
+      },
+      "logic": {
+        "type": "threshold",
+        "conditions": [
+          {
+            "if": {
+              "all": [
+                {
+                  "path": "computed.total_power_kw",
+                  "op": ">",
+                  "value": 450
+                },
+                {
+                  "path": "inputs.powertrain.battery.nominal_voltage_v",
+                  "op": "<=",
+                  "value": 400
+                }
+              ]
+            },
+            "then": {
+              "severity": "WARN",
+              "code": "EV-201-W1"
+            }
+          },
+          {
+            "if": {
+              "all": [
+                {
+                  "path": "computed.total_power_kw",
+                  "op": ">",
+                  "value": 650
+                },
+                {
+                  "path": "inputs.powertrain.battery.nominal_voltage_v",
+                  "op": "<=",
+                  "value": 400
+                }
+              ]
+            },
+            "then": {
+              "severity": "FAIL",
+              "code": "EV-201-F1"
+            }
+          }
+        ]
+      },
+      "message": "High power with low voltage increases current and thermal stress. Consider 800V architecture or split e-drives.",
+      "fix_actions": [
+        {
+          "id": "fix.ev201.set800v",
+          "label": "Switch to 800V class",
+          "type": "patch",
+          "patch": [
+            {
+              "op": "replace",
+              "path": "/inputs/powertrain/battery/nominal_voltage_v",
+              "value": 800
+            }
+          ],
+          "safe": true
+        },
+        {
+          "id": "fix.ev201.split_edrive",
+          "label": "Review e-drive/inverter split",
+          "type": "navigate",
+          "navigate_to": "EngineeringBay.Powertrain",
+          "safe": true
+        }
+      ]
+    },
+    {
+      "rule_id": "EV-202",
+      "title": "Battery Thermal Capacity Insufficient",
+      "severity": "FAIL",
+      "category": "EV",
+      "screen": "EngineeringBay.Thermal",
+      "field_paths": [
+        "inputs.thermal.cooling_package_size",
+        "inputs.thermal.battery_loop",
+        "computed.total_power_kw",
+        "inputs.powertrain.battery.capacity_kwh"
+      ],
+      "when": {
+        "all": [
+          {
+            "path": "inputs.powertrain.type",
+            "op": "in",
+            "value": [
+              "EV",
+              "HEV",
+              "PHEV",
+              "quad_motor"
+            ]
+          }
+        ]
+      },
+      "logic": {
+        "type": "threshold",
+        "conditions": [
+          {
+            "if": {
+              "all": [
+                {
+                  "path": "computed.total_power_kw",
+                  "op": ">",
+                  "value": 500
+                },
+                {
+                  "path": "inputs.powertrain.battery.capacity_kwh",
+                  "op": "<",
+                  "value": 75
+                },
+                {
+                  "path": "inputs.thermal.cooling_package_size",
+                  "op": "==",
+                  "value": "S"
+                }
+              ]
+            },
+            "then": {
+              "severity": "FAIL",
+              "code": "EV-202-F1"
+            }
+          }
+        ]
+      },
+      "message": "Cooling package is undersized for the selected power/battery combination. Add dedicated battery loop and increase cooling capacity.",
+      "fix_actions": [
+        {
+          "id": "fix.ev202.coolingL",
+          "label": "Increase cooling package to L",
+          "type": "patch",
+          "patch": [
+            {
+              "op": "replace",
+              "path": "/inputs/thermal/cooling_package_size",
+              "value": "L"
+            }
+          ],
+          "safe": true
+        },
+        {
+          "id": "fix.ev202.dedicatedLoop",
+          "label": "Set dedicated battery loop",
+          "type": "patch",
+          "patch": [
+            {
+              "op": "replace",
+              "path": "/inputs/thermal/battery_loop",
+              "value": "dedicated"
+            }
+          ],
+          "safe": true
+        },
+        {
+          "id": "fix.ev202.review",
+          "label": "Review Thermal Strategy",
+          "type": "navigate",
+          "navigate_to": "EngineeringBay.Thermal",
+          "safe": true
+        }
+      ]
+    },
+    {
+      "rule_id": "EV-205",
+      "title": "In-wheel Unsprung Mass Risk",
+      "severity": "WARN",
+      "category": "EV",
+      "screen": "EngineeringBay.Powertrain",
+      "field_paths": [
+        "inputs.powertrain.electric.motor_location",
+        "inputs.classification.intent",
+        "inputs.dimensions.wheel_diameter_in"
+      ],
+      "when": {
+        "all": [
+          {
+            "path": "inputs.powertrain.type",
+            "op": "in",
+            "value": [
+              "EV",
+              "HEV",
+              "PHEV",
+              "quad_motor"
+            ]
+          }
+        ]
+      },
+      "logic": {
+        "type": "threshold",
+        "conditions": [
+          {
+            "if": {
+              "all": [
+                {
+                  "path": "inputs.powertrain.electric.motor_location",
+                  "op": "==",
+                  "value": "in_wheel"
+                },
+                {
+                  "path": "inputs.classification.intent",
+                  "op": "in",
+                  "value": [
+                    "track",
+                    "mixed"
+                  ]
+                }
+              ]
+            },
+            "then": {
+              "severity": "WARN",
+              "code": "EV-205-W1"
+            }
+          }
+        ]
+      },
+      "message": "In-wheel motors increase unsprung mass and can degrade handling. Consider axle-mounted motors or mitigate with suspension/tire strategy.",
+      "fix_actions": [
+        {
+          "id": "fix.ev205.axleMotors",
+          "label": "Switch motor location to axle",
+          "type": "patch",
+          "patch": [
+            {
+              "op": "replace",
+              "path": "/inputs/powertrain/electric/motor_location",
+              "value": "axle"
+            }
+          ],
+          "safe": false
+        },
+        {
+          "id": "fix.ev205.dynamics",
+          "label": "Review Dynamics & Suspension",
+          "type": "navigate",
+          "navigate_to": "EngineeringBay.Dynamics",
+          "safe": true
+        }
+      ]
+    },
+    {
+      "rule_id": "EV-207",
+      "title": "Range Claim Plausibility",
+      "severity": "WARN",
+      "category": "EV",
+      "screen": "EngineeringBay.Energy",
+      "field_paths": [
+        "inputs.powertrain.battery.capacity_kwh",
+        "inputs.aero.cd",
+        "inputs.aero.frontal_area_m2",
+        "computed.range_km_est"
+      ],
+      "when": {
+        "all": [
+          {
+            "path": "inputs.powertrain.type",
+            "op": "in",
+            "value": [
+              "EV",
+              "PHEV"
+            ]
+          }
+        ]
+      },
+      "logic": {
+        "type": "threshold",
+        "conditions": [
+          {
+            "if": {
+              "all": [
+                {
+                  "path": "inputs.powertrain.battery.capacity_kwh",
+                  "op": "<",
+                  "value": 70
+                },
+                {
+                  "path": "inputs.aero.cd",
+                  "op": ">",
+                  "value": 0.28
+                },
+                {
+                  "path": "inputs.aero.frontal_area_m2",
+                  "op": ">",
+                  "value": 2.4
+                },
+                {
+                  "path": "computed.range_km_est",
+                  "op": ">",
+                  "value": 550
+                }
+              ]
+            },
+            "then": {
+              "severity": "WARN",
+              "code": "EV-207-W1"
+            }
+          }
+        ]
+      },
+      "message": "Estimated range appears optimistic for the battery/aero profile. Refine aero, increase battery capacity, or revise range target.",
+      "fix_actions": [
+        {
+          "id": "fix.ev207.aero",
+          "label": "Refine Aero Inputs",
+          "type": "navigate",
+          "navigate_to": "EngineeringBay.Aero",
+          "safe": true
+        },
+        {
+          "id": "fix.ev207.energy",
+          "label": "Adjust Battery Capacity",
+          "type": "navigate",
+          "navigate_to": "EngineeringBay.Energy",
+          "safe": true
+        }
+      ]
+    },
+    {
+      "rule_id": "AERO-301",
+      "title": "Downforce/Drag Plausibility",
+      "severity": "WARN",
+      "category": "AERO",
+      "screen": "EngineeringBay.Aero",
+      "field_paths": [
+        "inputs.aero.cl_downforce",
+        "inputs.aero.cd",
+        "inputs.aero.active_aero"
+      ],
+      "when": {
+        "all": [
+          {
+            "path": "inputs.aero.cl_downforce",
+            "op": "!=",
+            "value": null
+          }
+        ]
+      },
+      "logic": {
+        "type": "threshold",
+        "conditions": [
+          {
+            "if": {
+              "all": [
+                {
+                  "path": "inputs.aero.cl_downforce",
+                  "op": "<",
+                  "value": -1.2
+                },
+                {
+                  "path": "inputs.aero.cd",
+                  "op": "<",
+                  "value": 0.28
+                },
+                {
+                  "path": "inputs.aero.active_aero",
+                  "op": "==",
+                  "value": false
+                }
+              ]
+            },
+            "then": {
+              "severity": "FAIL",
+              "code": "AERO-301-F1"
+            }
+          },
+          {
+            "if": {
+              "all": [
+                {
+                  "path": "inputs.aero.cl_downforce",
+                  "op": "<",
+                  "value": -0.8
+                },
+                {
+                  "path": "inputs.aero.cd",
+                  "op": "<",
+                  "value": 0.28
+                },
+                {
+                  "path": "inputs.aero.active_aero",
+                  "op": "==",
+                  "value": false
+                }
+              ]
+            },
+            "then": {
+              "severity": "WARN",
+              "code": "AERO-301-W1"
+            }
+          }
+        ]
+      },
+      "message": "High downforce with very low drag is unlikely without active aero or an advanced underbody strategy. Add active aero or revise coefficients.",
+      "fix_actions": [
+        {
+          "id": "fix.aero301.enableActive",
+          "label": "Enable active aero",
+          "type": "patch",
+          "patch": [
+            {
+              "op": "replace",
+              "path": "/inputs/aero/active_aero",
+              "value": true
+            }
+          ],
+          "safe": true
+        },
+        {
+          "id": "fix.aero301.review",
+          "label": "Review Aero Strategy",
+          "type": "navigate",
+          "navigate_to": "EngineeringBay.Aero",
+          "safe": true
+        }
+      ]
+    },
+    {
+      "rule_id": "AERO-305",
+      "title": "Active Aero Fail-safe Missing",
+      "severity": "WARN",
+      "category": "AERO",
+      "screen": "EngineeringBay.Aero",
+      "field_paths": [
+        "inputs.aero.active_aero",
+        "inputs.aero.failsafe_defined"
+      ],
+      "when": {
+        "all": [
+          {
+            "path": "inputs.aero.active_aero",
+            "op": "==",
+            "value": true
+          }
+        ]
+      },
+      "logic": {
+        "type": "threshold",
+        "conditions": [
+          {
+            "if": {
+              "all": [
+                {
+                  "path": "inputs.aero.failsafe_defined",
+                  "op": "==",
+                  "value": false
+                }
+              ]
+            },
+            "then": {
+              "severity": "FAIL",
+              "code": "AERO-305-F1"
+            }
+          }
+        ]
+      },
+      "message": "Active aero requires a defined fail-safe/default state for safety and compliance. Define failsafe behavior.",
+      "fix_actions": [
+        {
+          "id": "fix.aero305.setFailsafe",
+          "label": "Set failsafe_defined = true",
+          "type": "patch",
+          "patch": [
+            {
+              "op": "replace",
+              "path": "/inputs/aero/failsafe_defined",
+              "value": true
+            }
+          ],
+          "safe": true
+        },
+        {
+          "id": "fix.aero305.review",
+          "label": "Define fail-safe mode",
+          "type": "navigate",
+          "navigate_to": "EngineeringBay.Aero",
+          "safe": true
+        }
+      ]
+    },
+    {
+      "rule_id": "AERO-304",
+      "title": "Ride Height vs Underbody Aero Effectiveness",
+      "severity": "WARN",
+      "category": "AERO",
+      "screen": "EngineeringBay.Hardpoints",
+      "field_paths": [
+        "inputs.dimensions.ride_height_mm",
+        "inputs.aero.cl_downforce"
+      ],
+      "when": {
+        "all": [
+          {
+            "path": "inputs.dimensions.ride_height_mm",
+            "op": "!=",
+            "value": null
+          }
+        ]
+      },
+      "logic": {
+        "type": "threshold",
+        "conditions": [
+          {
+            "if": {
+              "all": [
+                {
+                  "path": "inputs.dimensions.ride_height_mm",
+                  "op": ">",
+                  "value": 190
+                },
+                {
+                  "path": "inputs.aero.cl_downforce",
+                  "op": "<",
+                  "value": -0.7
+                }
+              ]
+            },
+            "then": {
+              "severity": "WARN",
+              "code": "AERO-304-W1"
+            }
+          }
+        ]
+      },
+      "message": "High ride height reduces underbody aero effectiveness. Lower ride height or revise diffuser/downforce expectations.",
+      "fix_actions": [
+        {
+          "id": "fix.aero304.lowerRide",
+          "label": "Lower ride height to 160mm",
+          "type": "patch",
+          "patch": [
+            {
+              "op": "replace",
+              "path": "/inputs/dimensions/ride_height_mm",
+              "value": 160
+            }
+          ],
+          "safe": false
+        },
+        {
+          "id": "fix.aero304.aero",
+          "label": "Review Aero Inputs",
+          "type": "navigate",
+          "navigate_to": "EngineeringBay.Aero",
+          "safe": true
+        }
+      ]
+    },
+    {
+      "rule_id": "AERO-302",
+      "title": "Cooling vs Drag Conflict",
+      "severity": "WARN",
+      "category": "AERO",
+      "screen": "EngineeringBay.Thermal",
+      "field_paths": [
+        "inputs.thermal.cooling_package_size",
+        "inputs.aero.cd",
+        "computed.total_power_kw"
+      ],
+      "when": {
+        "all": [
+          {
+            "path": "computed.total_power_kw",
+            "op": "!=",
+            "value": null
+          }
+        ]
+      },
+      "logic": {
+        "type": "threshold",
+        "conditions": [
+          {
+            "if": {
+              "all": [
+                {
+                  "path": "computed.total_power_kw",
+                  "op": ">",
+                  "value": 500
+                },
+                {
+                  "path": "inputs.thermal.cooling_package_size",
+                  "op": "==",
+                  "value": "S"
+                },
+                {
+                  "path": "inputs.aero.cd",
+                  "op": "<",
+                  "value": 0.26
+                }
+              ]
+            },
+            "then": {
+              "severity": "WARN",
+              "code": "AERO-302-W1"
+            }
+          }
+        ]
+      },
+      "message": "Aggressive low-drag target conflicts with small cooling package at high power. Consider active shutters and defined extraction.",
+      "fix_actions": [
+        {
+          "id": "fix.aero302.shutters",
+          "label": "Enable active shutters",
+          "type": "patch",
+          "patch": [
+            {
+              "op": "replace",
+              "path": "/inputs/thermal/active_shutters",
+              "value": true
+            }
+          ],
+          "safe": true
+        },
+        {
+          "id": "fix.aero302.coolingM",
+          "label": "Increase cooling package to M",
+          "type": "patch",
+          "patch": [
+            {
+              "op": "replace",
+              "path": "/inputs/thermal/cooling_package_size",
+              "value": "M"
+            }
+          ],
+          "safe": true
+        },
+        {
+          "id": "fix.aero302.thermal",
+          "label": "Review Thermal Strategy",
+          "type": "navigate",
+          "navigate_to": "EngineeringBay.Thermal",
+          "safe": true
+        }
+      ]
+    }
+  ]
+}

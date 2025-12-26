@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  project_id String   @id @default(uuid())
+  name       String
+  brand      String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  variants   Variant[]
+  snapshots  EngineeringSnapshot[]
+  patents    PatentDraft[]
+}
+
+model Variant {
+  variant_id   String   @id @default(uuid())
+  project_id   String
+  variant_name String
+  created_at   DateTime @default(now())
+
+  project Project @relation(fields: [project_id], references: [project_id], onDelete: Cascade)
+}
+
+model EngineeringSnapshot {
+  snapshot_id String   @id @default(uuid())
+  project_id  String
+  variant_id  String
+  created_at  DateTime @default(now())
+  created_by  Json
+  lock_state  String   @default("draft")
+
+  inputs      Json
+  computed    Json
+  validation  Json
+
+  project Project @relation(fields: [project_id], references: [project_id], onDelete: Cascade)
+
+  @@index([project_id])
+}
+
+model PatentDraft {
+  patent_draft_id String @id @default(uuid())
+  project_id String
+  variant_id String
+  snapshot_id String
+  type   String
+  status String @default("draft")
+  created_at DateTime @default(now())
+  sections Json
+  terminology_report Json?
+  readiness Json?
+
+  project Project @relation(fields: [project_id], references: [project_id], onDelete: Cascade)
+  comments CounselComment[]
+}
+
+model CounselComment {
+  comment_id String @id @default(uuid())
+  patent_draft_id String
+  anchor_id String
+  range Json
+  severity String
+  comment_text String
+  created_by Json
+  created_at DateTime @default(now())
+  status String @default("open")
+  creates_task Boolean @default(false)
+
+  task CounselTask?
+  patent PatentDraft @relation(fields: [patent_draft_id], references: [patent_draft_id], onDelete: Cascade)
+}
+
+model CounselTask {
+  task_id String @id @default(uuid())
+  comment_id String @unique
+  title String
+  linked_screen String
+  linked_field_paths Json
+  acceptance_criteria Json
+  status String @default("open")
+  resolution_note String?
+
+  comment CounselComment @relation(fields: [comment_id], references: [comment_id], onDelete: Cascade)
+}
+
+// V3 Compendium (minimal)
+model Brand {
+  brand_id String @id
+  name String @unique
+  country_origin String?
+  status String @default("active")
+}
+
+model TerminologyTerm {
+  term_id String @id
+  term String
+  category String
+  definition String
+  synonyms String[] @default([])
+  notes String?
+
+  @@unique([term, category])
+}
+
+model Vehicle {
+  vehicle_id String @id
+  brand_id String
+  model_name String
+  generation_name String?
+  year_start Int?
+  year_end Int?
+  segment_class_term_id String?
+  body_style_term_id String?
+  production_status String @default("production")
+  notes String?
+  seed_rank Int?
+
+  brand Brand @relation(fields: [brand_id], references: [brand_id], onDelete: Cascade)
+}
+
+model CompendiumVariant {
+  variant_id String @id
+  vehicle_id String
+  variant_name String
+  market_region String @default("global")
+  production_volume Int?
+  notes String?
+
+  vehicle Vehicle @relation(fields: [vehicle_id], references: [vehicle_id], onDelete: Cascade)
+}
