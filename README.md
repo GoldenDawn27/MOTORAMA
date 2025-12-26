@@ -1,4 +1,4 @@
-# Motorama (Next.js stack) — Starter Repo
+# Motorama (Next.js stack) - Starter Repo
 
 This starter implements Motorama V1/V2/V3 backbone using:
 - Next.js (App Router) + TypeScript
