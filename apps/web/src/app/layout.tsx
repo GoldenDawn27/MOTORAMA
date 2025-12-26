@@ -31,7 +31,7 @@ export default function RootLayout({
           </header>
           {children}
           <footer className="site-footer">
-            <p>Motorama · AI-assisted vehicle design & historical archive</p>
+            <p>Motorama | AI-assisted vehicle design & historical archive</p>
           </footer>
         </div>
       </body>

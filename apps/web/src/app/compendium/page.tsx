@@ -37,7 +37,7 @@ const formatYears = (vehicle: Vehicle) => {
     return `${vehicle.year_start}`;
   }
 
-  return `${vehicle.year_start}–${vehicle.year_end}`;
+  return `${vehicle.year_start}-${vehicle.year_end}`;
 };
 
 export default async function CompendiumPage() {

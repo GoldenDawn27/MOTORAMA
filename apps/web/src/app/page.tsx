@@ -102,7 +102,7 @@ export default function HomePage() {
               <p className="metric-label">Design prompts available</p>
             </div>
             <div>
-              <p className="metric">1886 → Today</p>
+              <p className="metric">1886 - Today</p>
               <p className="metric-label">Automotive timeline</p>
             </div>
             <div>
@@ -117,7 +117,7 @@ export default function HomePage() {
             Track-ready grand tourer blending 1960s aero cues with modern EV packaging.
           </p>
           <ul>
-            <li>Target range: 460 miles · Dual-motor AWD</li>
+            <li>Target range: 460 miles | Dual-motor AWD</li>
             <li>Materials: Bio-resin composite, recycled aluminum</li>
             <li>Key inspirations: Alfa 33 Stradale, Jaguar XJ13</li>
           </ul>
@@ -173,10 +173,10 @@ export default function HomePage() {
               <p className="list-sub">Curated by Motorama AI</p>
             </div>
             <ol>
-              <li>Plymouth XNR · asymmetrical roadster</li>
-              <li>Ford Mach 2 · mid-engine fastback</li>
-              <li>Alfa Romeo Carabo · wedge study</li>
-              <li>GM Astro II · turbine concept</li>
+              <li>Plymouth XNR | asymmetrical roadster</li>
+              <li>Ford Mach 2 | mid-engine fastback</li>
+              <li>Alfa Romeo Carabo | wedge study</li>
+              <li>GM Astro II | turbine concept</li>
             </ol>
           </div>
         </div>
