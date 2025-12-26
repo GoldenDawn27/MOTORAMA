@@ -12,7 +12,6 @@ const buildBaseUrl = () => {
 
 export const getApiHeaders = () => {
   const headers = new Headers();
-  headers.set("Content-Type", "application/json");
 
   if (process.env.AUTH_API_KEY) {
     headers.set("Authorization", `Bearer ${process.env.AUTH_API_KEY}`);

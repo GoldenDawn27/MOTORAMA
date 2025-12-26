@@ -2,7 +2,7 @@ import Card from "@/components/Card";
 import EmptyState from "@/components/EmptyState";
 import ErrorState from "@/components/ErrorState";
 import PageHeader from "@/components/PageHeader";
-import { apiFetch } from "@/components/api";
+import { apiFetch } from "@/server/apiFetch";
 
 type Project = {
   id?: string;
@@ -24,6 +24,19 @@ const getProjects = async (): Promise<{ projects: Project[]; error?: string }> =
   };
 
   return { projects: data.projects ?? data.items ?? [] };
+};
+
+const formatDate = (value?: string) => {
+  if (!value) {
+    return "Date TBD";
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return "Date TBD";
+  }
+
+  return parsed.toLocaleDateString();
 };
 
 export default async function ProjectsPage() {
@@ -52,7 +65,7 @@ export default async function ProjectsPage() {
               <Card key={project.id ?? `${project.name}-${index}`}>
                 <h3>{project.name ?? "Untitled program"}</h3>
                 <p>{project.brand ?? "Brand pending"}</p>
-                <p>{project.created_at ? new Date(project.created_at).toLocaleDateString() : "Date TBD"}</p>
+                <p>{formatDate(project.created_at)}</p>
               </Card>
             ))}
           </div>

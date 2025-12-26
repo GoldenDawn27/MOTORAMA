@@ -2,7 +2,7 @@ import Card from "@/components/Card";
 import EmptyState from "@/components/EmptyState";
 import ErrorState from "@/components/ErrorState";
 import PageHeader from "@/components/PageHeader";
-import { apiFetch } from "@/components/api";
+import { apiFetch } from "@/server/apiFetch";
 
 type Vehicle = {
   id?: string;
