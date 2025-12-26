@@ -89,8 +89,12 @@ export default function HomePage() {
             iconic cars with the right historical context, engineering signals, and creative momentum.
           </p>
           <div className="cta-row">
-            <button className="primary">Start a concept sprint</button>
-            <button className="secondary">Explore the compendium</button>
+            <a className="primary" href="/projects">
+              Start a concept sprint
+            </a>
+            <a className="secondary" href="/compendium">
+              Explore the compendium
+            </a>
           </div>
           <div className="hero-metrics">
             <div>
@@ -117,7 +121,9 @@ export default function HomePage() {
             <li>Materials: Bio-resin composite, recycled aluminum</li>
             <li>Key inspirations: Alfa 33 Stradale, Jaguar XJ13</li>
           </ul>
-          <button className="ghost">Generate fresh sketch set</button>
+          <a className="ghost" href="/projects">
+            Generate fresh sketch set
+          </a>
         </div>
       </section>
 
@@ -235,7 +241,9 @@ export default function HomePage() {
             Motorama helps your automotive teams move from inspiration to production with confidence and speed.
           </p>
         </div>
-        <button className="primary">Schedule a studio walkthrough</button>
+        <a className="primary" href="/projects">
+          Schedule a studio walkthrough
+        </a>
       </section>
     </main>
   );

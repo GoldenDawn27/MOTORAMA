@@ -21,7 +21,10 @@ a {
   text-decoration: none;
 }
 
-button {
+button,
+.primary,
+.secondary,
+.ghost {
   border: none;
   font: inherit;
   cursor: pointer;
@@ -123,6 +126,9 @@ h1 {
   padding: 0.9rem 1.8rem;
   border-radius: 999px;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .secondary {
@@ -132,6 +138,9 @@ h1 {
   border-radius: 999px;
   box-shadow: 0 10px 20px rgba(20, 21, 26, 0.08);
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hero-metrics {
@@ -177,6 +186,9 @@ h1 {
   padding: 0.8rem 1.5rem;
   border-radius: 999px;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .card-lede {

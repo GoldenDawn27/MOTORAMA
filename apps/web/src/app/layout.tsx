@@ -24,9 +24,9 @@ export default function RootLayout({
               </div>
             </div>
             <nav className="nav">
-              <a href="#design">Design Studio</a>
-              <a href="#compendium">Compendium</a>
-              <a href="#workflow">Workflow</a>
+              <a href="/projects">Design Studio</a>
+              <a href="/compendium">Compendium</a>
+              <a href="/#workflow">Workflow</a>
             </nav>
           </header>
           {children}
